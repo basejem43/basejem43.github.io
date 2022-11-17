@@ -14,7 +14,6 @@
     src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js">
     </script>
     <script src="js/init.js"></script>
-    
   </head>
   <body>
     <h1>Chat</h1>
@@ -22,11 +21,13 @@
       <input id="texto" type="text" required placeholder="Mensaje">
       <button>Enviar</button>
     </form>
+    <div class="container"> 
     <ol id="mensajes"><li><progress max="100">Cargando…</progress></li></ol>
-    <script>
-      // @ts-check
+      <script>
+        // @ts-check
       /** Nombre de usuario atenticado por Firebase. */
       let usuario = "";
+      let avatar = "";
       /** Conexión al sistema de autenticación de Firebase. */
       // @ts-ignore
       const auth = firebase.auth();
@@ -45,6 +46,8 @@
           if (usuarioAuth && usuarioAuth.email) {
             // Usuario aceptado.
             usuario = usuarioAuth.email;
+            // FOTO DE AVATAR
+            avatar = usuarioAuth.photoURL;
             // Muestra los mensajes del chat.
             muestraMensajes();
           } else {
@@ -69,7 +72,8 @@
           // @ts-ignore
           TEXTO: texto.value.trim(),
           // @ts-ignore
-          TIMESTAMP: firebase.firestore.FieldValue.serverTimestamp()
+          TIMESTAMP: firebase.firestore.FieldValue.serverTimestamp(),
+          AVATAR: avatar,
         });
       }
       /** Muestra los mensaje almacenados en la collection "MENSAJE". Se
@@ -102,11 +106,11 @@
                  * para evitar inyección de código. */
                 // @ts-ignore
                 mensajes.innerHTML += /* html */
-                  `<li><u>${cod(data.USUARIO)}</u> ${dformat}<br>${cod(data.TEXTO)}</li>`;
+                  `<li><img id="Avatar" alt="Avatar" src="${cod(data.AVATAR)}"><div class="msg">${cod(data.TEXTO)}<br><span class="date"><u>${cod(data.USUARIO)}</u><br>${dformat}</span></li></div>`;
               })
             },
             /* Función que se invoca cuando hay un error. Muestra el error. Al
-             * invocar esta función la conexión se cancela. Por lo mismo, se
+            * invocar esta función la conexión se cancela. Por lo mismo, se
              * vuelve a conectar. */
             e => {
               procesaError(e);
@@ -137,6 +141,7 @@
       function cod(texto) {
         return (texto || "").replace(/[&<>"']/g, letra => codMap.get(letra));
       }
-    </script>
+      </script>
+      </div>
   </body>
 </html>
